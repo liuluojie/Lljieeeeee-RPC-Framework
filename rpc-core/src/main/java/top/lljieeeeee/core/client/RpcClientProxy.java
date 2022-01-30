@@ -1,5 +1,7 @@
 package top.lljieeeeee.core.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lljieeeeee.common.entity.RpcRequest;
 import top.lljieeeeee.common.entity.RpcResponse;
 
@@ -15,35 +17,30 @@ import java.lang.reflect.Proxy;
  */
 public class RpcClientProxy implements InvocationHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
     private String host;
-    private Integer port;
+    private int port;
 
-    public RpcClientProxy(String host, Integer port) {
+    public RpcClientProxy(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    /**
-     *
-     * @param clazz
-     * @param <T>
-     */
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }
 
-
-
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        logger.info("调用方法: {}#{}", method.getDeclaringClass().getName(), method.getName());
         RpcRequest rpcRequest = RpcRequest.builder()
-                .interfaceName(method.getDeclaringClass().getSimpleName())
+                .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameters(args)
                 .paramTypes(method.getParameterTypes())
                 .build();
-        RpbClient rpbClient = new RpbClient();
-        return ((RpcResponse) rpbClient.sendRequest(rpcRequest, host, port)).getData();
+        RpcClient rpcClient = new RpcClient();
+        return rpcClient.sendRequest(rpcRequest, host, port);
     }
 }

@@ -1,5 +1,7 @@
 package top.lljieeeeee.service;
 
+import top.lljieeeeee.core.registry.DefaultServiceRegistry;
+import top.lljieeeeee.core.registry.ServiceRegistry;
 import top.lljieeeeee.core.server.RpcServer;
 import top.lljieeeeeee.api.HelloService;
 
@@ -13,7 +15,9 @@ public class TestService {
 
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        RpcServer rpcServer = new RpcServer();
-        rpcServer.register(helloService, 9999);
+        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+        serviceRegistry.register(helloService);
+        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        rpcServer.start(9999);
     }
 }
