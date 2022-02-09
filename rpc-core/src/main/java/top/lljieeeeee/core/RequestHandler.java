@@ -1,4 +1,4 @@
-package top.lljieeeeee.core.server;
+package top.lljieeeeee.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

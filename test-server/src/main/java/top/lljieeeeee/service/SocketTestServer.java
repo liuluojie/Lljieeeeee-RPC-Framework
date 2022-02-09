@@ -2,7 +2,7 @@ package top.lljieeeeee.service;
 
 import top.lljieeeeee.core.registry.DefaultServiceRegistry;
 import top.lljieeeeee.core.registry.ServiceRegistry;
-import top.lljieeeeee.core.server.RpcServer;
+import top.lljieeeeee.core.socket.server.SocketServer;
 import top.lljieeeeeee.api.HelloService;
 
 /**
@@ -11,13 +11,13 @@ import top.lljieeeeeee.api.HelloService;
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
  */
-public class TestService {
+public class SocketTestServer {
 
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
-        rpcServer.start(9999);
+        SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.start(9999);
     }
 }

@@ -1,4 +1,4 @@
-package top.lljieeeeee.core.client;
+package top.lljieeeeee.core.socket.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,7 @@ import top.lljieeeeee.common.entity.RpcResponse;
 import top.lljieeeeee.common.enumeration.ResponseCode;
 import top.lljieeeeee.common.enumeration.RpcError;
 import top.lljieeeeee.common.exception.RpcException;
+import top.lljieeeeee.core.RpcClient;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,11 +20,20 @@ import java.net.Socket;
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
  */
-public class RpcClient {
+public class SocketClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
+    private final String host;
+    private final int port;
+
+    public SocketClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    @Override
+    public Object sendRequest(RpcRequest rpcRequest) {
         try (Socket socket = new Socket(host, port)) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());

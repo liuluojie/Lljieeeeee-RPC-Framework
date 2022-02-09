@@ -1,5 +1,6 @@
 package top.lljieeeeee.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,8 +13,10 @@ import java.io.Serializable;
  * @QQ 2015743127
  */
 @Data
-@Builder
+@AllArgsConstructor
 public class RpcRequest implements Serializable {
+
+    public RpcRequest() {}
 
     /**
      * 被调用接口的名称
