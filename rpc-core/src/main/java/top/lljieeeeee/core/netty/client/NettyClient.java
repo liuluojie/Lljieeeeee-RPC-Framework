@@ -1,13 +1,10 @@
 package top.lljieeeeee.core.netty.client;
 
-import com.sun.deploy.nativesandbox.comm.Response;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +13,7 @@ import top.lljieeeeee.common.entity.RpcResponse;
 import top.lljieeeeee.core.RpcClient;
 import top.lljieeeeee.core.codec.CommonDecoder;
 import top.lljieeeeee.core.codec.CommonEncoder;
-import top.lljieeeeee.core.netty.server.NettyServerHandler;
 import top.lljieeeeee.core.serializer.HessianSerializer;
-import top.lljieeeeee.core.serializer.JsonSerializer;
-import top.lljieeeeee.core.serializer.KryoSerializer;
 
 /**
  * @author Lljieeeeee
@@ -30,6 +24,8 @@ import top.lljieeeeee.core.serializer.KryoSerializer;
 public class NettyClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+
+    private static final Bootstrap bootstrap;
 
     private String host;
 
