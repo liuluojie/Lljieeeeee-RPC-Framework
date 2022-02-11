@@ -1,6 +1,7 @@
 package top.lljieeeeee;
 
 import top.lljieeeeee.core.RpcClientProxy;
+import top.lljieeeeee.core.serializer.KryoSerializer;
 import top.lljieeeeee.core.socket.client.SocketClient;
 import top.lljieeeeeee.api.HelloObject;
 import top.lljieeeeeee.api.HelloService;
@@ -15,6 +16,7 @@ public class SocketTestClient {
 
     public static void main(String[] args) {
         SocketClient client = new SocketClient("127.0.0.1", 9999);
+        client.setSerializer(new KryoSerializer());
         RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(1, "This is a message");

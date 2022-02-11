@@ -12,10 +12,13 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.common.enumeration.RpcError;
+import top.lljieeeeee.common.exception.RpcException;
 import top.lljieeeeee.core.RpcServer;
 import top.lljieeeeee.core.codec.CommonDecoder;
 import top.lljieeeeee.core.codec.CommonEncoder;
 import top.lljieeeeee.core.registry.DefaultServiceRegistry;
+import top.lljieeeeee.core.serializer.CommonSerializer;
 import top.lljieeeeee.core.serializer.HessianSerializer;
 import top.lljieeeeee.core.serializer.JsonSerializer;
 import top.lljieeeeee.core.serializer.KryoSerializer;
@@ -30,13 +33,19 @@ public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
+    private CommonSerializer serializer;
+
     @Override
     public void start(int port) {
+        if (serializer == null) {
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
-            serverBootstrap.group(workerGroup, workerGroup)
+            serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .option(ChannelOption.SO_BACKLOG, 256)
@@ -46,7 +55,7 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new CommonEncoder(new HessianSerializer()))
+                            pipeline.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
                         }
@@ -59,5 +68,10 @@ public class NettyServer implements RpcServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

@@ -2,6 +2,7 @@ package top.lljieeeeee.service;
 
 import top.lljieeeeee.core.registry.DefaultServiceRegistry;
 import top.lljieeeeee.core.registry.ServiceRegistry;
+import top.lljieeeeee.core.serializer.KryoSerializer;
 import top.lljieeeeee.core.socket.server.SocketServer;
 import top.lljieeeeeee.api.HelloService;
 
@@ -18,6 +19,7 @@ public class SocketTestServer {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
         SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.setSerializer(new KryoSerializer());
         socketServer.start(9999);
     }
 }
