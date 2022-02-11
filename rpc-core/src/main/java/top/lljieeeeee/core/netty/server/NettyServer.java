@@ -17,6 +17,7 @@ import top.lljieeeeee.core.codec.CommonDecoder;
 import top.lljieeeeee.core.codec.CommonEncoder;
 import top.lljieeeeee.core.registry.DefaultServiceRegistry;
 import top.lljieeeeee.core.serializer.JsonSerializer;
+import top.lljieeeeee.core.serializer.KryoSerializer;
 
 /**
  * @author Lljieeeeee
@@ -44,7 +45,7 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new CommonEncoder(new JsonSerializer()))
+                            pipeline.addLast(new CommonEncoder(new KryoSerializer()))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
                         }
