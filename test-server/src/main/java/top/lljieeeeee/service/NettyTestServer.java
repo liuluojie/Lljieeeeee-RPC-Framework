@@ -3,6 +3,7 @@ package top.lljieeeeee.service;
 import top.lljieeeeee.core.netty.server.NettyServer;
 import top.lljieeeeee.core.registry.DefaultServiceRegistry;
 import top.lljieeeeee.core.serializer.HessianSerializer;
+import top.lljieeeeee.core.serializer.ProtobufSerializer;
 
 /**
  * @author Lljieeeeee
@@ -17,7 +18,7 @@ public class NettyTestServer {
         DefaultServiceRegistry registry = new DefaultServiceRegistry();
         registry.register(helloService);
         NettyServer server = new NettyServer();
-        server.setSerializer(new HessianSerializer());
+        server.setSerializer(new ProtobufSerializer());
         server.start(9999);
     }
 }

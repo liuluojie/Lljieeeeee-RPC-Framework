@@ -1,6 +1,7 @@
 package top.lljieeeeee.common.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import top.lljieeeeee.common.enumeration.ResponseCode;
 
 import java.io.Serializable;
@@ -12,10 +13,8 @@ import java.io.Serializable;
  * @QQ 2015743127
  */
 @Data
+@NoArgsConstructor
 public class RpcResponse<T> implements Serializable {
-
-    public RpcResponse() {}
-
 
     /**
      * 响应对应的请求号
