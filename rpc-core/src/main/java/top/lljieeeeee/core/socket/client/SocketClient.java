@@ -7,6 +7,7 @@ import top.lljieeeeee.common.entity.RpcResponse;
 import top.lljieeeeee.common.enumeration.ResponseCode;
 import top.lljieeeeee.common.enumeration.RpcError;
 import top.lljieeeeee.common.exception.RpcException;
+import top.lljieeeeee.common.util.RpcMessageChecker;
 import top.lljieeeeee.core.RpcClient;
 import top.lljieeeeee.core.serializer.CommonSerializer;
 import top.lljieeeeee.core.socket.util.ObjectReader;
@@ -55,6 +56,7 @@ public class SocketClient implements RpcClient {
                 logger.error("调用服务失败, service: {}, response:{}", rpcRequest.getInterfaceName(), rpcResponse);
                 throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, " service:" + rpcRequest.getInterfaceName());
             }
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
             return rpcResponse.getData();
         } catch (IOException e) {
             logger.error("调用时有错误发生：", e);
