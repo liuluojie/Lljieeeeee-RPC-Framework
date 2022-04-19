@@ -3,6 +3,10 @@ package top.lljieeeeee.rpc.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.entity.RpcRequest;
+import top.lljieeeeee.rpc.entity.RpcResponse;
+import top.lljieeeeee.rpc.enumeration.ResponseCode;
+import top.lljieeeeee.rpc.enumeration.RpcError;
+import top.lljieeeeee.rpc.exception.RpcException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,11 +34,19 @@ public class RpcClient {
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             objectOutputStream.writeObject(rpcRequest);
             objectOutputStream.flush();
-            Object result = objectInputStream.readObject();
-            return result;
+            RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
+            if (rpcResponse == null) {
+                logger.error("服务调用失败，service：{}" + rpcRequest.getInterfaceName());
+                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service：" + rpcRequest.getInterfaceName());
+            }
+            if (rpcResponse.getStatusCode() == null || !rpcResponse.getStatusCode().equals(ResponseCode.SUCCESS.getCode())) {
+                logger.error("服务调用失败，service：{} response：{}", rpcRequest.getInterfaceName(), rpcResponse);
+                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service：" + rpcRequest.getInterfaceName());
+            }
+            return rpcResponse.getData();
         } catch (IOException | ClassNotFoundException e) {
             logger.error("调用时有错误发生：" + e);
-            return null;
+            throw new RpcException("服务调用失败：", e);
         }
     }
 }

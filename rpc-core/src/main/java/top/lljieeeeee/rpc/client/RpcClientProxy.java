@@ -1,5 +1,7 @@
 package top.lljieeeeee.rpc.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
 
@@ -14,6 +16,8 @@ import java.lang.reflect.Proxy;
  * @QQ 2015743127
  */
 public class RpcClientProxy implements InvocationHandler {
+
+    public static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
     private String host;
     private Integer port;
@@ -31,6 +35,7 @@ public class RpcClientProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        logger.info("调用方法：{}#{}", method.getDeclaringClass().getName(), method.getName());
         //客户端向服务端传输的对象，Builder模式生成，利用反射获取相关信息
         RpcRequest rpcRequest = RpcRequest.builder()
                 .interfaceName(method.getDeclaringClass().getName())
@@ -39,6 +44,6 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .build();
         RpcClient rpcClient = new RpcClient();
-        return ((RpcResponse)rpcClient.sendRequest(rpcRequest, host, port)).getData();
+        return rpcClient.sendRequest(rpcRequest, host, port);
     }
 }
