@@ -1,5 +1,6 @@
 package top.lljieeeeee.rpc.test;
 
+import top.lljieeeeee.rpc.registry.DefaultServiceRegistry;
 import top.lljieeeeee.rpc.server.RpcServer;
 
 /**
@@ -12,7 +13,9 @@ public class TestServer {
 
     public static void main(String[] args) {
         HelloServiceImpl helloService = new HelloServiceImpl();
-        RpcServer rpcServer = new RpcServer();
-        rpcServer.register(helloService, 9000);
+        DefaultServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+        serviceRegistry.register(helloService);
+        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        rpcServer.start(9000);
     }
 }
