@@ -2,7 +2,8 @@ package top.lljieeeeee.rpc.test;
 
 import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
-import top.lljieeeeee.rpc.client.RpcClientProxy;
+import top.lljieeeeee.rpc.RpcClientProxy;
+import top.lljieeeeee.rpc.socket.client.SocketClient;
 
 /**
  * @author Lljieeeeee
@@ -10,10 +11,11 @@ import top.lljieeeeee.rpc.client.RpcClientProxy;
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
  */
-public class TestClient {
+public class SocketTestClient {
 
     public static void main(String[] args) {
-        RpcClientProxy proxy = new RpcClientProxy("127.0.0.1", 9000);
+        SocketClient client = new SocketClient("127.0.0.1", 9000);
+        RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "This is test message");
         String result = helloService.hello(object);

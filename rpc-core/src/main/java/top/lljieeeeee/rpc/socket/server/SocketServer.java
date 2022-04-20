@@ -1,7 +1,9 @@
-package top.lljieeeeee.rpc.server;
+package top.lljieeeeee.rpc.socket.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.RequestHandler;
+import top.lljieeeeee.rpc.RpcServer;
 import top.lljieeeeee.rpc.registry.ServiceRegistry;
 
 import java.io.IOException;
@@ -14,10 +16,11 @@ import java.util.concurrent.*;
  * @date 2022/4/19 13:32
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
+ * Socket方式进行远程调用连接的服务端
  */
-public class RpcServer {
+public class SocketServer implements RpcServer {
 
-    public static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    public static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 50;
@@ -29,7 +32,7 @@ public class RpcServer {
     private final ServiceRegistry serviceRegistry;
 
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
 
         /**
@@ -44,6 +47,7 @@ public class RpcServer {
         threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
     }
 
+    @Override
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("服务器启动。。。");

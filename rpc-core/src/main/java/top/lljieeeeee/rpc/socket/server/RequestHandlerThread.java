@@ -1,7 +1,8 @@
-package top.lljieeeeee.rpc.server;
+package top.lljieeeeee.rpc.socket.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.RequestHandler;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
 import top.lljieeeeee.rpc.registry.ServiceRegistry;
@@ -9,7 +10,6 @@ import top.lljieeeeee.rpc.registry.ServiceRegistry;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
 /**
@@ -17,7 +17,7 @@ import java.net.Socket;
  * @date 2022/4/19 14:37
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
- * 处理客户端RpcRequest的工作线程
+ * IO传输模式|处理客户端RpcRequest的工作线程
  */
 public class RequestHandlerThread implements Runnable{
 

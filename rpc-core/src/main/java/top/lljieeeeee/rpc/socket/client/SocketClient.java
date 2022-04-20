@@ -1,7 +1,8 @@
-package top.lljieeeeee.rpc.client;
+package top.lljieeeeee.rpc.socket.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.RpcClient;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
 import top.lljieeeeee.rpc.enumeration.ResponseCode;
@@ -12,19 +13,28 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * @author Lljieeeeee
  * @date 2022/4/19 13:06
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
+ * Socket方式进行远程调用的客户端
  */
-public class RpcClient {
+public class SocketClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
+    private final String host;
+    private final int port;
+
+    public SocketClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    @Override
+    public Object sendRequest(RpcRequest rpcRequest) {
         /**
          * socket套接字实现TCP网络传输
          * try()中一般放对资源的请求，若{}出现异常，()资源会自动关闭
@@ -49,4 +59,5 @@ public class RpcClient {
             throw new RpcException("服务调用失败：", e);
         }
     }
+
 }
