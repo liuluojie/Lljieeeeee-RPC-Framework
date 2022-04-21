@@ -19,9 +19,9 @@ public class RpcClientProxy implements InvocationHandler {
 
     public static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
-    private final SocketClient client;
+    private final RpcClient client;
 
-    public RpcClientProxy(SocketClient client) {
+    public RpcClientProxy(RpcClient client) {
         this.client = client;
     }
 

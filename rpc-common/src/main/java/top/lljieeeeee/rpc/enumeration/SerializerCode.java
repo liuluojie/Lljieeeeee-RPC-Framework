@@ -1,0 +1,19 @@
+package top.lljieeeeee.rpc.enumeration;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * @author Lljieeeeee
+ * @date 2022/4/21 13:33
+ * @url https://www.lljieeeeee.top/
+ * @QQ 2015743127
+ */
+@AllArgsConstructor
+@Getter
+public enum SerializerCode {
+
+    JSON(1);
+
+    private final int code;
+}
