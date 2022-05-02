@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
  */
 public class KryoSerializer implements CommonSerializer{
 
-    public static final Logger logger = LoggerFactory.getLogger(KryoSerializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(KryoSerializer.class);
 
     /**
      * 使用ThreadLocal初始化Kryo，因为Kryo中的output和input是线程不安全的
