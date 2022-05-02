@@ -1,6 +1,7 @@
 package top.lljieeeeee.rpc.test;
 
 import top.lljieeeeee.rpc.registry.DefaultServiceRegistry;
+import top.lljieeeeee.rpc.serializer.HessianSerializer;
 import top.lljieeeeee.rpc.socket.server.SocketServer;
 
 import java.util.Arrays;
@@ -19,7 +20,8 @@ public class SocketTestServer {
         HelloServiceImpl helloService = new HelloServiceImpl();
         DefaultServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
-        SocketServer rpcServer = new SocketServer(serviceRegistry);
-        rpcServer.start(9000);
+        SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.setSerializer(new HessianSerializer());
+        socketServer.start(9000);
     }
 }

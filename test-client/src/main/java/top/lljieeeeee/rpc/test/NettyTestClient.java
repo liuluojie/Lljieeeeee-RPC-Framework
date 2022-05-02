@@ -4,6 +4,7 @@ import top.lljieeeeee.rpc.RpcClientProxy;
 import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
 import top.lljieeeeee.rpc.netty.client.NettyClient;
+import top.lljieeeeee.rpc.serializer.HessianSerializer;
 
 /**
  * @author Lljieeeeee
@@ -15,6 +16,7 @@ public class NettyTestClient {
 
     public static void main(String[] args) {
         NettyClient client = new NettyClient("127.0.0.1", 9999);
+        client.setSerializer(new HessianSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "this is netty style");

@@ -1,6 +1,7 @@
 package top.lljieeeeee.rpc;
 
 import top.lljieeeeee.rpc.entity.RpcRequest;
+import top.lljieeeeee.rpc.serializer.CommonSerializer;
 
 /**
  * @author Lljieeeeee
@@ -12,4 +13,6 @@ import top.lljieeeeee.rpc.entity.RpcRequest;
 public interface RpcClient {
 
     Object sendRequest(RpcRequest rpcRequest);
+
+    void setSerializer(CommonSerializer serializer);
 }

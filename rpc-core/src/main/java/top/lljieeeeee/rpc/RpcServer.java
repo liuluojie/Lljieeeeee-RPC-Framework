@@ -1,5 +1,7 @@
 package top.lljieeeeee.rpc;
 
+import top.lljieeeeee.rpc.serializer.CommonSerializer;
+
 /**
  * @author Lljieeeeee
  * @date 2022/4/20 21:49
@@ -10,4 +12,6 @@ package top.lljieeeeee.rpc;
 public interface RpcServer {
 
     void start(int port);
+
+    void setSerializer(CommonSerializer serializer);
 }
