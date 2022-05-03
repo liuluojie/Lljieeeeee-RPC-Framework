@@ -11,6 +11,7 @@ import top.lljieeeeee.rpc.exception.RpcException;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.socket.util.ObjectReader;
 import top.lljieeeeee.rpc.socket.util.ObjectWriter;
+import top.lljieeeeee.rpc.util.RpcMessageChecker;
 
 import java.io.*;
 import java.net.Socket;
@@ -52,14 +53,7 @@ public class SocketClient implements RpcClient {
             ObjectWriter.writeObject(outputStream, rpcRequest, serializer);
             Object obj = ObjectReader.readObject(inputStream);
             RpcResponse rpcResponse = (RpcResponse) obj;
-            if (rpcResponse == null) {
-                logger.error("服务调用失败，service：{}" + rpcRequest.getInterfaceName());
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service：" + rpcRequest.getInterfaceName());
-            }
-            if (rpcResponse.getStatusCode() == null || !rpcResponse.getStatusCode().equals(ResponseCode.SUCCESS.getCode())) {
-                logger.error("服务调用失败，service：{} response：{}", rpcRequest.getInterfaceName(), rpcResponse);
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service：" + rpcRequest.getInterfaceName());
-            }
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
             return rpcResponse.getData();
         } catch (IOException e) {
             logger.error("调用时有错误发生：" + e);

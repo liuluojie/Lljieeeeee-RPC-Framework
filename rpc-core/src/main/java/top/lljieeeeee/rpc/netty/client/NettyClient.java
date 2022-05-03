@@ -17,6 +17,7 @@ import top.lljieeeeee.rpc.enumeration.RpcError;
 import top.lljieeeeee.rpc.exception.RpcException;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.serializer.KryoSerializer;
+import top.lljieeeeee.rpc.util.RpcMessageChecker;
 
 /**
  * @author Lljieeeeee
@@ -78,9 +79,10 @@ public class NettyClient implements RpcClient {
                 });
                 channel.closeFuture().sync();
                 //AttributeMap<AttributeKey, AttributeValue>是绑定在Channel上的，可以设置用来获取通道对象
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
                 //get()阻塞获取value
                 RpcResponse rpcResponse = channel.attr(key).get();
+                RpcMessageChecker.check(rpcRequest, rpcResponse);
                 return rpcResponse.getData();
             }
         }catch (InterruptedException e) {
