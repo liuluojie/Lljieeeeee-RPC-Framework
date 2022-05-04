@@ -8,6 +8,7 @@ import top.lljieeeeee.rpc.enumeration.RpcError;
 import top.lljieeeeee.rpc.exception.RpcException;
 import top.lljieeeeee.rpc.registry.ServiceRegistry;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
+import top.lljieeeeee.rpc.util.ThreadPoolFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,11 +26,6 @@ public class SocketServer implements RpcServer {
 
     public static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXIMUM_POOL_SIZE = 50;
-    private static final int KEEP_ALIVE_TIME = 60;
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
-
     private final ExecutorService threadPool;
     private RequestHandler requestHandler = new RequestHandler();
     private CommonSerializer serializer;
@@ -38,17 +34,10 @@ public class SocketServer implements RpcServer {
 
     public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
-
-        /**
-         * 设置上限为100个线程的阻塞队列
-         */
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-
         /**
          * 创建线程池实例
          */
-        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
 
     @Override
