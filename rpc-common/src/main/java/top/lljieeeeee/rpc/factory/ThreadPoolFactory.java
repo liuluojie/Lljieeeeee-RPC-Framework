@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc.util;
+package top.lljieeeeee.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NoArgsConstructor;

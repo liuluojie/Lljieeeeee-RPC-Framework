@@ -1,13 +1,14 @@
 package top.lljieeeeee.rpc.transport.netty.client;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.register.NacosServiceDiscovery;
-import top.lljieeeeee.rpc.register.NacosServiceRegistry;
 import top.lljieeeeee.rpc.register.ServiceDiscovery;
-import top.lljieeeeee.rpc.register.ServiceRegistry;
 import top.lljieeeeee.rpc.transport.RpcClient;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
@@ -29,6 +30,18 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NettyClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+
+    private static final EventLoopGroup group;
+    private static final Bootstrap bootstrap;
+
+    static {
+        group = new NioEventLoopGroup();
+        bootstrap = new Bootstrap();
+        bootstrap.group(group)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.SO_KEEPALIVE, true);
+    }
+
     private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
@@ -50,29 +63,29 @@ public class NettyClient implements RpcClient {
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             //创建Netty通道地址
             Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
-            if (channel.isActive()) {
-                //向服务器发请求，并设置监听
-                channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                    if (future1.isSuccess()) {
-                        logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
-                    }else {
-                        logger.error("发送消息时有错误发生：", future1.cause());
-                    }
-                });
-                channel.closeFuture().sync();
-                //AttributeMap<AttributeKey, AttributeValue>是绑定在Channel上的，可以设置用来获取通道对象
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
-                //get()阻塞获取value
-                RpcResponse rpcResponse = channel.attr(key).get();
-                RpcMessageChecker.check(rpcRequest, rpcResponse);
-                result.set(rpcResponse.getData());
-            }else {
-                //0表示“正常”退出程序，即如果当前程序还有在执行的任务，则等待所有任务执行完成以后再退出
-                channel.close();
-                System.exit(0);
+            if (!channel.isActive()) {
+                group.shutdownGracefully();
+                return null;
             }
+            //向服务器发请求，并设置监听
+            channel.writeAndFlush(rpcRequest).addListener(future1 -> {
+                if (future1.isSuccess()) {
+                    logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
+                }else {
+                    logger.error("发送消息时有错误发生：", future1.cause());
+                }
+            });
+            channel.closeFuture().sync();
+            //AttributeMap<AttributeKey, AttributeValue>是绑定在Channel上的，可以设置用来获取通道对象
+            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
+            //get()阻塞获取value
+            RpcResponse rpcResponse = channel.attr(key).get();
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
+            result.set(rpcResponse.getData());
         }catch (InterruptedException e) {
             logger.error("发送消息时有错误发生：", e);
+            //interrupt()这里的作用是给受阻塞的当前线程发出一个中断信号，让当前线程退出阻塞状态，好继续执行然后结束
+            Thread.currentThread().interrupt();
         }
         return result.get();
     }
