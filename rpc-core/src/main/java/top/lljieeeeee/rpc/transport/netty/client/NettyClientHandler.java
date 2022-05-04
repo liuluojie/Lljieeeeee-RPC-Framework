@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc.netty.client;
+package top.lljieeeeee.rpc.transport.netty.client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -7,7 +7,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.entity.RpcResponse;
-import top.lljieeeeee.rpc.netty.server.NettyServerHandler;
+import top.lljieeeeee.rpc.transport.netty.server.NettyServerHandler;
 
 /**
  * @author Lljieeeeee

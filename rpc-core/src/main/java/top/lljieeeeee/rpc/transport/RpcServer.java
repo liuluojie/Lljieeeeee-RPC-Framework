@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc;
+package top.lljieeeeee.rpc.transport;
 
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 
@@ -11,7 +11,15 @@ import top.lljieeeeee.rpc.serializer.CommonSerializer;
  */
 public interface RpcServer {
 
-    void start(int port);
+    void start();
 
     void setSerializer(CommonSerializer serializer);
+
+    /**
+     * 向Nacos注册服务
+     * @param service
+     * @param serviceClass
+     * @param <T>
+     */
+    <T> void publishService(Object service, Class<T> serviceClass);
 }

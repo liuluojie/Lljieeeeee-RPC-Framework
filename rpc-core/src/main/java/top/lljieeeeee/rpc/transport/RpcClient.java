@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc;
+package top.lljieeeeee.rpc.transport;
 
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;

@@ -1,16 +1,20 @@
-package top.lljieeeeee.rpc.socket.server;
+package top.lljieeeeee.rpc.transport.socket.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lljieeeeee.rpc.RequestHandler;
-import top.lljieeeeee.rpc.RpcServer;
+import top.lljieeeeee.rpc.handler.RequestHandler;
+import top.lljieeeeee.rpc.provider.ServiceProvider;
+import top.lljieeeeee.rpc.provider.ServiceProviderImpl;
+import top.lljieeeeee.rpc.register.NacosServiceRegistry;
+import top.lljieeeeee.rpc.register.ServiceRegistry;
+import top.lljieeeeee.rpc.transport.RpcServer;
 import top.lljieeeeee.rpc.enumeration.RpcError;
 import top.lljieeeeee.rpc.exception.RpcException;
-import top.lljieeeeee.rpc.registry.ServiceRegistry;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.util.ThreadPoolFactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -29,29 +33,48 @@ public class SocketServer implements RpcServer {
     private final ExecutorService threadPool;
     private RequestHandler requestHandler = new RequestHandler();
     private CommonSerializer serializer;
+    private final String host;
+    private final int port;
+
     private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
 
-
-    public SocketServer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public SocketServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
         /**
          * 创建线程池实例
          */
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
 
+    /**
+     * 将服务保存在本地的注册表，同时注册到Nacos注册中心
+     * @param service
+     * @param serviceClass
+     * @param <T>
+     */
     @Override
-    public void start(int port) {
+    public <T> void publishService(Object service, Class<T> serviceClass) {
         if (serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
+
+    @Override
+    public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("服务器启动。。。");
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 logger.info("客户端连接！{}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler,serializer));
             }
             threadPool.shutdown();
         } catch (IOException e) {
@@ -59,8 +82,10 @@ public class SocketServer implements RpcServer {
         }
     }
 
+
     @Override
     public void setSerializer(CommonSerializer serializer) {
         this.serializer = serializer;
     }
+
 }

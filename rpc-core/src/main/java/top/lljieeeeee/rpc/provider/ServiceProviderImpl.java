@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc.registry;
+package top.lljieeeeee.rpc.provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/4/19 14:27
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
- * 默认服务注册表
+ * 默认的服务注册表，保存服务端本地服务
  */
-public class DefaultServiceRegistry implements ServiceRegistry{
+public class ServiceProviderImpl implements ServiceProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     /**
      * key：服务名称（即接口名）
@@ -32,7 +32,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     private static final Set registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public synchronized  <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         String serviceImplName = service.getClass().getCanonicalName();
         if (registeredService.contains(serviceImplName)) {
             return;
@@ -50,7 +50,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     }
 
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUNT);

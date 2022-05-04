@@ -1,10 +1,12 @@
-package top.lljieeeeee.rpc.netty.client;
+package top.lljieeeeee.rpc.transport.netty.client;
 
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lljieeeeee.rpc.RpcClient;
+import top.lljieeeeee.rpc.register.NacosServiceRegistry;
+import top.lljieeeeee.rpc.register.ServiceRegistry;
+import top.lljieeeeee.rpc.transport.RpcClient;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
 import top.lljieeeeee.rpc.enumeration.RpcError;
@@ -24,16 +26,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class NettyClient implements RpcClient {
 
-    public static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+    private final ServiceRegistry serviceRegistry;
 
     private CommonSerializer serializer;
 
-    private String host;
-    private int port;
-
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public NettyClient() {
+        serviceRegistry = new NacosServiceRegistry();
     }
 
     @Override
@@ -45,7 +44,10 @@ public class NettyClient implements RpcClient {
         //保证自定义实体类变量的原子性和共享性的线程安全，此处应用于rpcResponse
         AtomicReference<Object> result = new AtomicReference<>(null);
         try {
-            Channel channel = ChannelProvider.get(new InetSocketAddress(host, port), serializer);
+            //从Nacos获取提供对应的服务的服务端地址
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            //创建Netty通道地址
+            Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
             if (channel.isActive()) {
                 //向服务器发请求，并设置监听
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {

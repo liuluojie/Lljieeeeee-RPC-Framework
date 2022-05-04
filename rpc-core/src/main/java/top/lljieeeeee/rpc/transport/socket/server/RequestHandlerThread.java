@@ -1,14 +1,12 @@
-package top.lljieeeeee.rpc.socket.server;
+package top.lljieeeeee.rpc.transport.socket.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lljieeeeee.rpc.RequestHandler;
+import top.lljieeeeee.rpc.handler.RequestHandler;
 import top.lljieeeeee.rpc.entity.RpcRequest;
-import top.lljieeeeee.rpc.entity.RpcResponse;
-import top.lljieeeeee.rpc.registry.ServiceRegistry;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
-import top.lljieeeeee.rpc.socket.util.ObjectReader;
-import top.lljieeeeee.rpc.socket.util.ObjectWriter;
+import top.lljieeeeee.rpc.transport.socket.util.ObjectReader;
+import top.lljieeeeee.rpc.transport.socket.util.ObjectWriter;
 
 import java.io.*;
 import java.net.Socket;
@@ -26,13 +24,11 @@ public class RequestHandlerThread implements Runnable{
 
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
     private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
-        this.serviceRegistry = serviceRegistry;
         this.serializer = serializer;
     }
 
@@ -41,9 +37,7 @@ public class RequestHandlerThread implements Runnable{
         try (InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream()) {
             RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
-            String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getService(interfaceName);
-            Object response = requestHandler.handle(rpcRequest, service);
+            Object response = requestHandler.handle(rpcRequest);
             ObjectWriter.writeObject(outputStream, response, serializer);
         }catch (IOException e){
             logger.info("调用或发送时有错误发生：" + e);

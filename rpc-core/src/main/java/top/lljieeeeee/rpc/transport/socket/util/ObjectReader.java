@@ -1,4 +1,4 @@
-package top.lljieeeeee.rpc.socket.util;
+package top.lljieeeeee.rpc.transport.socket.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
