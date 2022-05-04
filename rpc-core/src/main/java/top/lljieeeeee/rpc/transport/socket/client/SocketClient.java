@@ -2,7 +2,9 @@ package top.lljieeeeee.rpc.transport.socket.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.register.NacosServiceDiscovery;
 import top.lljieeeeee.rpc.register.NacosServiceRegistry;
+import top.lljieeeeee.rpc.register.ServiceDiscovery;
 import top.lljieeeeee.rpc.register.ServiceRegistry;
 import top.lljieeeeee.rpc.transport.RpcClient;
 import top.lljieeeeee.rpc.entity.RpcRequest;
@@ -29,12 +31,12 @@ public class SocketClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
 
     public SocketClient() {
-        serviceRegistry = new NacosServiceRegistry();
+        serviceDiscovery = new NacosServiceDiscovery();
     }
 
     @Override
@@ -44,7 +46,7 @@ public class SocketClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         //从Nacos获取提供对应服务的服务端地址
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
         /**
          * socket套接字实现TCP网络传输
          * try()中一般放对资源的请求，若{}出现异常，()资源会自动关闭

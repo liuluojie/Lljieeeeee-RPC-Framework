@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
  * @date 2022/5/4 15:27
  * @url https://www.lljieeeeee.top/
  * @QQ 2015743127
+ * 服务注册接口
  */
 public interface ServiceRegistry {
 
@@ -17,10 +18,4 @@ public interface ServiceRegistry {
      */
     void register(String serviceName, InetSocketAddress inetSocketAddress);
 
-    /**
-     * 根据服务名查找服务实体
-     * @param serviceName
-     * @return
-     */
-    InetSocketAddress lookupService(String serviceName);
 }

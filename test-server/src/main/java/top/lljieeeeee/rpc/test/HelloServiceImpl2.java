@@ -12,17 +12,17 @@ import top.lljieeeeee.rpc.api.HelloService;
  * @QQ 2015743127
  * 服务端API实现
  */
-public class HelloServiceImpl implements HelloService {
+public class HelloServiceImpl2 implements HelloService {
 
     /**
      * 使用 HelloServiceImpl 初始化日志对象，方便在日志输出的时候，可以打印出日志信息所属的类
      */
-    public static final Logger logger = LoggerFactory.getLogger(HelloServiceImpl.class);
+    public static final Logger logger = LoggerFactory.getLogger(HelloServiceImpl2.class);
 
     @Override
     public String hello(HelloObject object) {
         //使用{}可以直接将getMessage()内容输出
         logger.info("接收到了：{}", object.getMessage());
-        return "本次处理来自Netty服务";
+        return "本次处理来自Socket服务";
     }
 }
