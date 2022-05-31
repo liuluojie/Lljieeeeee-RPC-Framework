@@ -2,6 +2,7 @@ package top.lljieeeeee.rpc.test;
 
 import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
+import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.transport.RpcClientProxy;
 import top.lljieeeeee.rpc.serializer.KryoSerializer;
 import top.lljieeeeee.rpc.transport.socket.client.SocketClient;
@@ -15,8 +16,7 @@ import top.lljieeeeee.rpc.transport.socket.client.SocketClient;
 public class SocketTestClient {
 
     public static void main(String[] args) {
-        SocketClient client = new SocketClient();
-        client.setSerializer(new KryoSerializer());
+        SocketClient client = new SocketClient(CommonSerializer.PROTOBUF_SERIALIZER);
         RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "This is test message");

@@ -41,7 +41,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             Object response = requestHandler.handle(msg);
             //这里的通道是workerGroup中的，而NettyServer中创建的是bossGroup的
             ChannelFuture future = ctx.writeAndFlush(response);
-            //添加一个监听器到 future 来检测是否所有的数据包都发出，然后关闭通道
+            //当操作失败或者被取消了就关闭通道
             future.addListener(ChannelFutureListener.CLOSE);
         }finally {
             ReferenceCountUtil.release(msg);

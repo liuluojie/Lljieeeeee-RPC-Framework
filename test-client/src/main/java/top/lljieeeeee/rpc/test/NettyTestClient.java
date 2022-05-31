@@ -1,5 +1,6 @@
 package top.lljieeeeee.rpc.test;
 
+import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.transport.RpcClientProxy;
 import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
@@ -15,8 +16,7 @@ import top.lljieeeeee.rpc.serializer.ProtostuffSerializer;
 public class NettyTestClient {
 
     public static void main(String[] args) {
-        NettyClient client = new NettyClient();
-        client.setSerializer(new ProtostuffSerializer());
+        NettyClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER);
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "this is netty style");
