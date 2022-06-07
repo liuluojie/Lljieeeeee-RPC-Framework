@@ -7,6 +7,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.hook.ShutdownHook;
@@ -22,6 +23,7 @@ import top.lljieeeeee.rpc.exception.RpcException;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lljieeeeee
@@ -102,7 +104,9 @@ public class NettyServer implements RpcServer {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             //往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，Decoder()就要放在前面。
                             //但入站和出站Handler之间则互不影响，这里就是先添加的出站Handler再添加的入站
-                            pipeline.addLast(new CommonEncoder(serializer))
+                            //设定IdleStateHandler心跳检测每30秒进行一次读检测，如果30秒内ChannelRead()方法未被调用则触发一次userEventTrigger()方法
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                                    .addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
                         }

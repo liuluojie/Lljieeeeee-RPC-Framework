@@ -4,7 +4,6 @@ import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.transport.RpcClientProxy;
-import top.lljieeeeee.rpc.serializer.KryoSerializer;
 import top.lljieeeeee.rpc.transport.socket.client.SocketClient;
 
 /**
