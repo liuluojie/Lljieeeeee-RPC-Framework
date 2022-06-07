@@ -1,5 +1,6 @@
 package top.lljieeeeee.rpc.factory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,7 +12,7 @@ import java.util.TreeMap;
  */
 public class SingletonFactory {
 
-    private static Map<Class, Object> objectMap = new TreeMap<>();
+    private static Map<Class, Object> objectMap = new HashMap<>();
 
     public SingletonFactory() {
 

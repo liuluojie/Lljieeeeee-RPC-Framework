@@ -3,11 +3,16 @@ package top.lljieeeeee.rpc.transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.entity.RpcRequest;
+import top.lljieeeeee.rpc.entity.RpcResponse;
+import top.lljieeeeee.rpc.transport.netty.client.NettyClient;
+import top.lljieeeeee.rpc.transport.socket.client.SocketClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Lljieeeeee
@@ -26,16 +31,32 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     //抑制编译器产生警告信息
-    @SuppressWarnings("unckecked")
+    @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(Object proxy, Method method, Object[] args){
         logger.info("调用方法：{}#{}", method.getDeclaringClass().getName(), method.getName());
         RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(),
                 method.getName(), args, method.getParameterTypes(), false);
-        return client.sendRequest(rpcRequest);
+        Object result = null;
+        if (client instanceof NettyClient) {
+            //异步获取调用请求
+            CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest);
+            try {
+                result = completableFuture.get().getData();
+            } catch (ExecutionException | InterruptedException e) {
+                logger.error("方法调用请求发送失败");
+                return null;
+            }
+        }
+        if (client instanceof SocketClient) {
+            RpcResponse rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
+            result = rpcResponse.getData();
+        }
+        return result;
     }
 }

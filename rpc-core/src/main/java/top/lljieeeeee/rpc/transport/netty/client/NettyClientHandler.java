@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.entity.RpcRequest;
 import top.lljieeeeee.rpc.entity.RpcResponse;
+import top.lljieeeeee.rpc.factory.SingletonFactory;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.transport.netty.server.NettyServerHandler;
 
@@ -27,6 +28,12 @@ import java.net.InetSocketAddress;
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     public static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
+
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyClientHandler() {
+        unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -50,10 +57,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
         try {
             logger.info("客户端接收到消息：%s", msg);
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + msg.getRequestId());
-            ctx.channel().attr(key).set(msg);
-            //关闭客户端通道
-            ctx.channel().close();
+            //将响应数据取出
+            unprocessedRequests.complete(msg);
         }finally {
             ReferenceCountUtil.release(msg);
         }
