@@ -2,6 +2,8 @@ package top.lljieeeeee.rpc.transport.socket.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.loadbalancer.LoadBalancer;
+import top.lljieeeeee.rpc.loadbalancer.RandomLoadBalancer;
 import top.lljieeeeee.rpc.register.NacosServiceDiscovery;
 import top.lljieeeeee.rpc.register.NacosServiceRegistry;
 import top.lljieeeeee.rpc.register.ServiceDiscovery;
@@ -36,12 +38,20 @@ public class SocketClient implements RpcClient {
     private final CommonSerializer serializer;
 
     public SocketClient() {
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
+    }
+
+    public SocketClient(LoadBalancer loadBalancer) {
+        this(DEFAULT_SERIALIZER, loadBalancer);
     }
 
     public SocketClient(Integer serializerCode) {
-        serviceDiscovery = new NacosServiceDiscovery();
-        serializer = CommonSerializer.getByCode(serializerCode);
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public SocketClient(Integer serializerCode, LoadBalancer loadBalancer) {
+        this.serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
+        this.serializer = CommonSerializer.getByCode(serializerCode);
     }
 
     @Override

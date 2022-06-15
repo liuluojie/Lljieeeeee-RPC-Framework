@@ -7,6 +7,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lljieeeeee.rpc.factory.SingletonFactory;
+import top.lljieeeeee.rpc.loadbalancer.LoadBalancer;
+import top.lljieeeeee.rpc.loadbalancer.RandomLoadBalancer;
 import top.lljieeeeee.rpc.register.NacosServiceDiscovery;
 import top.lljieeeeee.rpc.register.ServiceDiscovery;
 import top.lljieeeeee.rpc.transport.RpcClient;
@@ -47,11 +49,19 @@ public class NettyClient implements RpcClient {
     private final UnprocessedRequests unprocessedRequests;
 
     public NettyClient() {
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
+    }
+
+    public NettyClient(LoadBalancer loadBalancer) {
+        this(DEFAULT_SERIALIZER, loadBalancer);
     }
 
     public NettyClient(Integer serializerCode) {
-        serviceDiscovery = new NacosServiceDiscovery();
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public NettyClient(Integer serializerCode, LoadBalancer loadBalancer) {
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
         unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
