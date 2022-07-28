@@ -1,5 +1,6 @@
 package top.lljieeeeee.rpc.test;
 
+import top.lljieeeeee.rpc.api.ByeService;
 import top.lljieeeeee.rpc.serializer.CommonSerializer;
 import top.lljieeeeee.rpc.transport.RpcClientProxy;
 import top.lljieeeeee.rpc.api.HelloObject;
@@ -22,5 +23,8 @@ public class NettyTestClient {
         HelloObject object = new HelloObject(12, "this is netty style");
         String res = helloService.hello(object);
         System.out.println(res);
+        ByeService byeService = rpcClientProxy.getProxy(ByeService.class);
+        String netty = byeService.bye("netty");
+        System.out.println(netty);
     }
 }

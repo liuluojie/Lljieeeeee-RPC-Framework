@@ -55,14 +55,13 @@ public class NacosUtil {
      */
     public static void registerService(String serviceName, InetSocketAddress inetSocketAddress) throws NacosException {
         namingService.registerInstance(serviceName, inetSocketAddress.getHostName(), inetSocketAddress.getPort());
-        NacosUtil.address = address;
+        NacosUtil.address = inetSocketAddress;
         //保存注册的服务名
         serviceNames.add(serviceName);
     }
 
     /**
      * 获取所有提供该服务的服务端地址
-     * @param namingService
      * @param serviceName
      * @return
      * @throws NacosException

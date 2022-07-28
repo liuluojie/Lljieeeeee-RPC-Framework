@@ -5,6 +5,8 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.enumeration.RpcError;
+import top.lljieeeeee.rpc.exception.RpcException;
 import top.lljieeeeee.rpc.loadbalancer.LoadBalancer;
 import top.lljieeeeee.rpc.loadbalancer.RandomLoadBalancer;
 import top.lljieeeeee.rpc.util.NacosUtil;
@@ -41,6 +43,10 @@ public class NacosServiceDiscovery implements ServiceDiscovery{
         try {
             //利用列表获取某个服务的所有提供者
             List<Instance> instances = NacosUtil.getAllInstance(serviceName);
+            if (instances.size() == 0) {
+                logger.error("找不到对应服务：{}", serviceName);
+                throw new RpcException(RpcError.SERVICE_NOT_FOUNT);
+            }
             //通过负载均衡获取一个实例
             Instance instance = loadBalancer.select(instances);
             return new InetSocketAddress(instance.getIp(), instance.getPort());

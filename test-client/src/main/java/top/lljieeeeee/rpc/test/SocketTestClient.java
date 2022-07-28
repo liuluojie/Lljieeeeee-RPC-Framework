@@ -2,6 +2,7 @@ package top.lljieeeeee.rpc.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lljieeeeee.rpc.api.ByeService;
 import top.lljieeeeee.rpc.api.HelloObject;
 import top.lljieeeeee.rpc.api.HelloService;
 import top.lljieeeeee.rpc.loadbalancer.RoundRobinLoadBalancer;
@@ -24,10 +25,12 @@ public class SocketTestClient {
         RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject object = null;
-        for (int i = 1; i <= 100; i++) {
-            object = new HelloObject(i, "This is test message，来自第" + i + "个请求");
-            String result = helloService.hello(object);
-            logger.info("第 {} 次请求结果：{}", i, result);
-        }
+        object = new HelloObject(1, "This is test message");
+        String result = helloService.hello(object);
+        System.out.println(result);
+        ByeService byeService = proxy.getProxy(ByeService.class);
+        String socket = byeService.bye("socket");
+        System.out.println(socket);
+
     }
 }

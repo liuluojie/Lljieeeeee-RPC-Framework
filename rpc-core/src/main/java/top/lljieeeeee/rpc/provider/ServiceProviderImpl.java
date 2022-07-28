@@ -34,12 +34,11 @@ public class ServiceProviderImpl implements ServiceProvider {
     /**
      * 保存服务到本地服务注册表
      * @param service 服务实现类对象
-     * @param serviceClass 服务类
+     * @param serviceName 服务类
      * @param <T>
      */
     @Override
-    public <T> void addServiceProvider(T service, Class<T> serviceClass) {
-        String serviceName = serviceClass.getCanonicalName();
+    public <T> void addServiceProvider(T service, String serviceName) {
         if (registeredService.contains(serviceName)) {
             return;
         }
